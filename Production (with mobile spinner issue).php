@@ -45,7 +45,7 @@ if (isset($_POST['submit'])) {
     $url = "https://api.openai.com/v1/chat/completions";
     $messages = [
         ["role" => "system", "content" => "You act as if you were Gordon Ramsay and you help users generate simple and fast to make recipes."],
-        ["role" => "user", "content" => "Create 3 cuisine recipes based on the following ingredients, dietary preferences, and cuisine preferences: Ingredients: {$ingredients}, Dietary preferences: {$dietary_preferences}, Cuisine preferences: {$cuisine_preferences}. The recipes should be easy to follow with a section with list of ingredients and a section with instructions for cooking. Format each recipe name in bold text. Do not provide any of your comments or confirmations, just the recipes."]
+        ["role" => "user", "content" => "Create 3 cuisine recipes based on the following ingredients, dietary preferences, and cuisine preferences: Ingredients: {$ingredients}, Dietary preferences: {$dietary_preferences}, Cuisine preferences: {$cuisine_preferences}. The recipes should be easy to follow with a section with list of ingredients and a section with instructions for cooking. Each recipe title should be in bold text and larger font size than the recipe text. Do not provide any of your comments or confirmations, just the recipes."]
     ];
 
     $headers = [
@@ -161,14 +161,23 @@ if (isset($_POST['submit'])) {
         border: 1px solid #ddd;
         border-radius: 4px;
     }
-    .spinner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20px 0;
-}
+    .processing-message {
+        padding: 20px;
+        background-color: #f1f1f1;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: center;
+    }
 
+    @media (max-width: 480px) {
+        form {
+            max-width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
 </style>
+
 
 
 
