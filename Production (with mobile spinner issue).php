@@ -45,7 +45,7 @@ if (isset($_POST['submit'])) {
     $url = "https://api.openai.com/v1/chat/completions";
     $messages = [
         ["role" => "system", "content" => "You act as if you were Gordon Ramsay and you help users generate simple and fast to make recipes."],
-        ["role" => "user", "content" => "Create 3 cuisine recipes based on the following ingredients, dietary preferences, and cuisine preferences: Ingredients: {$ingredients}, Dietary preferences: {$dietary_preferences}, Cuisine preferences: {$cuisine_preferences}. The recipes should be easy to follow with a section with list of ingredients and a section with instructions for cooking. Each recipe title should be in bold text and larger font size than the recipe text. Do not provide any of your comments or confirmations, just the recipes."]
+        ["role" => "user", "content" => "Create 3 cuisine recipes based on the following ingredients, dietary preferences, and cuisine preferences: Ingredients: {$ingredients}, Dietary preferences: {$dietary_preferences}, Cuisine preferences: {$cuisine_preferences}. The recipes should be easy to follow with a section with list of ingredients and a section with instructions for cooking. The output format must be in reach text and each recipe's title should be in bold text and larger font size than the recipe text. Do not provide any of your comments or confirmations, just the recipes."]
     ];
 
     $headers = [
@@ -281,13 +281,32 @@ cuisinePreferencesDropdown.addEventListener('change', function () {
     }
 });
 
-function showProcessingMessage() {
+/* function showProcessingMessage() {
         const processingMessage = document.querySelector('.processing-message');
         processingMessage.style.display = 'block';
     }
 
     document.querySelector('form').addEventListener('submit', showProcessingMessage);
+ */
 
+function showProcessingMessage() {
+    const processingMessage = document.querySelector('.processing-message');
+    processingMessage.style.display = 'block';
+}
+
+function hideProcessingMessage() {
+    const processingMessage = document.querySelector('.processing-message');
+    processingMessage.style.display = 'none';
+}
+
+document.querySelector('form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    showProcessingMessage();
+    setTimeout(() => {
+        hideProcessingMessage();
+        e.target.submit();
+    }, 100);
+});
 
 </script>
 
