@@ -4,8 +4,7 @@
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
-$uploads = wp_upload_dir();
-$spinner_url = $uploads['baseurl'] . '/2023/04/spinner.gif';
+
 
 if (isset($_POST['submit'])) {
     if (!wp_verify_nonce($_POST['recipe_generator_nonce'], 'recipe_generator')) {
@@ -45,8 +44,8 @@ if (isset($_POST['submit'])) {
     $model = "gpt-3.5-turbo";
     $url = "https://api.openai.com/v1/chat/completions";
     $messages = [
-        ["role" => "system", "content" => "You act as if you were Gordon Ramsay and you help users generate simple, yet punchy recipes."],
-        ["role" => "user", "content" => "Create 3 cuisine recipes based on the following ingredients, dietary preferences, and cuisine preferences: Ingredients: {$ingredients}, Dietary preferences: {$dietary_preferences}, Cuisine preferences: {$cuisine_preferences}. The recipes should be punchy and easy to follow with a list of ingredients and instructions for cooking. Please use some humor if you can."]
+        ["role" => "system", "content" => "You act as if you were Gordon Ramsay and you help users generate simple and fast to make recipes."],
+        ["role" => "user", "content" => "Create 3 cuisine recipes based on the following ingredients, dietary preferences, and cuisine preferences: Ingredients: {$ingredients}, Dietary preferences: {$dietary_preferences}, Cuisine preferences: {$cuisine_preferences}. The recipes should be easy to follow with a section with list of ingredients and a section with instructions for cooking. Format each recipe name in bold text. Do not provide any of your comments or confirmations, just the recipes."]
     ];
 
     $headers = [
@@ -177,7 +176,7 @@ if (isset($_POST['submit'])) {
 
 
 <!-- HTML code -->
-<form method="post" action="#recipes-output" onsubmit="showSpinner()">
+<form method="post" action="#recipes-output" onsubmit="showProcessingMessage()">
 
     <?php wp_nonce_field('recipe_generator', 'recipe_generator_nonce'); ?>
 
@@ -185,6 +184,7 @@ if (isset($_POST['submit'])) {
     <label for="ingredients">Ingredients:</label>
     <input type="text" id="ingredients" name="ingredients" value="<?php echo isset($ingredients) ? $ingredients : ''; ?>" required>
 
+  
     <h2>Dietary Preferences</h2>
     <div class="checkboxes">
         <?php
@@ -230,8 +230,8 @@ if (isset($_POST['submit'])) {
 </form>
 
 
-<div class="spinner-container" style="display: none;">
-<img src="<?php echo $spinner_url; ?>" alt="Loading..." style="width: 50px; height: 50px;">
+<div class="processing-message" style="display: none;">
+    <p>Please wait, your request is being processed. This usually takes around 15 seconds.</p>
 </div>
 
 
@@ -272,23 +272,18 @@ cuisinePreferencesDropdown.addEventListener('change', function () {
     }
 });
 
-function showSpinner() {
-    const spinnerContainer = document.querySelector('.spinner-container');
-    spinnerContainer.style.display = 'flex';
-}
+function showProcessingMessage() {
+        const processingMessage = document.querySelector('.processing-message');
+        processingMessage.style.display = 'block';
+    }
 
-document.querySelector('form').addEventListener('submit', showSpinner);
+    document.querySelector('form').addEventListener('submit', showProcessingMessage);
 
 
 </script>
 
 
 <?php if (isset($recipes)): ?>
-<script>
-    const spinnerContainer = document.querySelector('.spinner-container');
-    spinnerContainer.style.display = 'none';
-</script>
-
     <div class="recipes" id="recipes-output">
         <?php echo $recipes; ?>
     </div>
