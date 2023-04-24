@@ -1,5 +1,4 @@
 <?php
-// version 13 April 2023 23:06 working + improvements
 //Allow for testing
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
@@ -203,37 +202,45 @@ if (isset($_POST['submit'])) {
         ];
         foreach ($dietary_options as $option) {
             $id = strtolower(str_replace(' ', '_', $option));
+            $checked = '';
+            if (isset($sanitized_dietary_preferences) && in_array($option, $sanitized_dietary_preferences)) {
+                $checked = 'checked';
+            }
             echo '<div class="checkbox-container">';
-            echo "<input type='checkbox' id='{$id}' name='dietary_preferences[]' value='{$option}'>";
+            echo "<input type='checkbox' id='{$id}' name='dietary_preferences[]' value='{$option}' {$checked}>";
             echo "<label for='{$id}'>{$option}</label>";
             echo '</div>';
-        }
+        }              
         ?>
         <div class="hidden" id="custom_dietary_pref_container">
             <label for="custom_dietary_pref">Custom Dietary Preference:</label>
-            <input type="text" id="custom_dietary_pref" name="custom_dietary_pref" placeholder="Enter your preference" disabled>
+            <input type="text" id="custom_dietary_pref" name="custom_dietary_pref" placeholder="Enter your preference" value="<?php echo isset($custom_dietary_pref) ? $custom_dietary_pref : ''; ?>" disabled>
         </div>
+
     </div>
 
     <h2>Cuisine Preferences</h2>
     <label for="cuisine_preferences">Cuisine Preferences:</label>
     <select id="cuisine_preferences" name="cuisine_preferences" required>
-        <option value="Italian">Italian</option>
-        <option value="Chinese">Chinese</option>
-        <option value="French">French</option>
-        <option value="Spanish">Spanish</option>
-        <option value="Japanese">Japanese</option>
-        <option value="Indian">Indian</option>
-        <option value="Greek">Greek</option>
-        <option value="Thai">Thai</option>
-        <option value="Mexican">Mexican</option>
-        <option value="US">US</option>
-        <option value="Custom">Custom</option>
+    <?php
+    $cuisine_options = [
+        'Italian', 'Chinese', 'French', 'Spanish', 'Japanese', 'Indian', 'Greek', 'Thai', 'Mexican', 'US', 'Custom'
+    ];
+    foreach ($cuisine_options as $option) {
+        $selected = '';
+        if (isset($cuisine_preferences) && $cuisine_preferences === $option) {
+            $selected = 'selected';
+        }
+        echo "<option value='{$option}' {$selected}>{$option}</option>";
+    }
+    ?>
     </select>
+
     <div class="hidden" id="custom_cuisine_container">
-        <label for="custom_cuisine">Custom Cuisine:</label>
-        <input type="text" id="custom_cuisine" name="custom_cuisine" placeholder="Enter your cuisine" disabled>
+    <label for="custom_cuisine">Custom Cuisine:</label>
+    <input type="text" id="custom_cuisine" name="custom_cuisine" placeholder="Enter your cuisine" value="<?php echo isset($custom_cuisine) ? $custom_cuisine : ''; ?>" disabled>
     </div>
+
 
     <button type="submit" name="submit">Generate Recipes</button>
 </form>
@@ -264,6 +271,13 @@ customDietaryPrefCheckbox.addEventListener('change', function () {
     }
 });
 
+// Check if custom dietary preference was selected
+if (customDietaryPrefCheckbox.checked) {
+    customDietaryPrefInput.disabled = false;
+    customDietaryPrefInput.required = true;
+    customDietaryPrefContainer.classList.remove('hidden');
+}
+
 // Handle custom cuisine preference dropdown
 const cuisinePreferencesDropdown = document.getElementById('cuisine_preferences');
 const customCuisineInput = document.getElementById('custom_cuisine');
@@ -280,6 +294,12 @@ cuisinePreferencesDropdown.addEventListener('change', function () {
         customCuisineContainer.classList.add('hidden');
     }
 });
+
+if (cuisinePreferencesDropdown.value === 'Custom') {
+    customCuisineInput.disabled = false;
+    customCuisineInput.required = true;
+    customCuisineContainer.classList.remove('hidden');
+}
 
 /* function showProcessingMessage() {
         const processingMessage = document.querySelector('.processing-message');
@@ -302,10 +322,38 @@ function hideProcessingMessage() {
 document.querySelector('form').addEventListener('submit', (e) => {
     e.preventDefault();
     showProcessingMessage();
+    sessionStorage.setItem('custom_cuisine', customCuisineInput.value);
+    sessionStorage.setItem('cuisine_preferences', cuisinePreferencesDropdown.value);
     setTimeout(() => {
         hideProcessingMessage();
         e.target.submit();
     }, 100);
+});
+
+// Check if custom cuisine input value exists in sessionStorage and pre-fill the input field
+const customCuisineSessionValue = sessionStorage.getItem('custom_cuisine');
+if (customCuisineSessionValue && cuisinePreferencesSessionValue === 'Custom') {
+    customCuisineInput.value = customCuisineSessionValue;
+    customCuisineInput.disabled = false;
+    customCuisineInput.required = true;
+    customCuisineContainer.classList.remove('hidden');
+}
+
+
+
+// Check if cuisine preferences dropdown value exists in sessionStorage and pre-fill the dropdown
+const cuisinePreferencesSessionValue = sessionStorage.getItem('cuisine_preferences');
+if (cuisinePreferencesSessionValue) {
+    cuisinePreferencesDropdown.value = cuisinePreferencesSessionValue;
+    if (cuisinePreferencesSessionValue === 'Custom') {
+        customCuisineInput.disabled = false;
+        customCuisineInput.required = true;
+        customCuisineContainer.classList.remove('hidden');
+    }
+}
+
+cuisinePreferencesDropdown.addEventListener('change', () => {
+    sessionStorage.setItem('cuisine_preferences', cuisinePreferencesDropdown.value);
 });
 
 </script>
