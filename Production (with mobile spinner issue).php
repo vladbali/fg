@@ -251,8 +251,6 @@ if (isset($_POST['submit'])) {
 </div>
 
 
-
-
 <script>
 // Handle custom dietary preference checkbox
 const customDietaryPrefCheckbox = document.getElementById('custom');
@@ -301,22 +299,14 @@ if (cuisinePreferencesDropdown.value === 'Custom') {
     customCuisineContainer.classList.remove('hidden');
 }
 
-/* function showProcessingMessage() {
-        const processingMessage = document.querySelector('.processing-message');
-        processingMessage.style.display = 'block';
+const customCuisineSessionValue = sessionStorage.getItem('custom_cuisine');
+if (customCuisineSessionValue) {
+    customCuisineInput.value = customCuisineSessionValue;
+    if (cuisinePreferencesDropdown.value === 'Custom') {
+        customCuisineInput.disabled = false;
+        customCuisineInput.required = true;
+        customCuisineContainer.classList.remove('hidden');
     }
-
-    document.querySelector('form').addEventListener('submit', showProcessingMessage);
- */
-
-function showProcessingMessage() {
-    const processingMessage = document.querySelector('.processing-message');
-    processingMessage.style.display = 'block';
-}
-
-function hideProcessingMessage() {
-    const processingMessage = document.querySelector('.processing-message');
-    processingMessage.style.display = 'none';
 }
 
 document.querySelector('form').addEventListener('submit', (e) => {
@@ -330,15 +320,22 @@ document.querySelector('form').addEventListener('submit', (e) => {
     }, 100);
 });
 
-// Check if custom cuisine input value exists in sessionStorage and pre-fill the input field
-const customCuisineSessionValue = sessionStorage.getItem('custom_cuisine');
-if (customCuisineSessionValue && cuisinePreferencesSessionValue === 'Custom') {
-    customCuisineInput.value = customCuisineSessionValue;
-    customCuisineInput.disabled = false;
-    customCuisineInput.required = true;
-    customCuisineContainer.classList.remove('hidden');
+cuisinePreferencesDropdown.addEventListener('change', () => {
+    sessionStorage.setItem('cuisine_preferences', cuisinePreferencesDropdown.value);
+    if (cuisinePreferencesDropdown.value !== 'Custom') {
+        sessionStorage.removeItem('custom_cuisine');
+    }
+});
+
+function showProcessingMessage() {
+    const processingMessage = document.querySelector('.processing-message');
+    processingMessage.style.display = 'block';
 }
 
+function hideProcessingMessage() {
+    const processingMessage = document.querySelector('.processing-message');
+    processingMessage.style.display = 'none';
+}
 
 
 // Check if cuisine preferences dropdown value exists in sessionStorage and pre-fill the dropdown
@@ -352,9 +349,19 @@ if (cuisinePreferencesSessionValue) {
     }
 }
 
-cuisinePreferencesDropdown.addEventListener('change', () => {
-    sessionStorage.setItem('cuisine_preferences', cuisinePreferencesDropdown.value);
-});
+if (!cuisinePreferencesSessionValue) {
+    cuisinePreferencesDropdown.selectedIndex = 0;
+    if (cuisinePreferencesDropdown.value === 'Custom') {
+        customCuisineInput.disabled = false;
+        customCuisineInput.required = true;
+        customCuisineContainer.classList.remove('hidden');
+    } else {
+        customCuisineInput.disabled = true;
+        customCuisineInput.required = false;
+        customCuisineContainer.classList.add('hidden');
+    }
+}
+
 
 </script>
 
