@@ -299,14 +299,13 @@ if (cuisinePreferencesDropdown.value === 'Custom') {
     customCuisineContainer.classList.remove('hidden');
 }
 
+customCuisineInput.addEventListener('input', function () {
+    sessionStorage.setItem('custom_cuisine', this.value);
+});
+
 const customCuisineSessionValue = sessionStorage.getItem('custom_cuisine');
 if (customCuisineSessionValue) {
     customCuisineInput.value = customCuisineSessionValue;
-    if (cuisinePreferencesDropdown.value === 'Custom') {
-        customCuisineInput.disabled = false;
-        customCuisineInput.required = true;
-        customCuisineContainer.classList.remove('hidden');
-    }
 }
 
 document.querySelector('form').addEventListener('submit', (e) => {
@@ -337,7 +336,6 @@ function hideProcessingMessage() {
     processingMessage.style.display = 'none';
 }
 
-
 // Check if cuisine preferences dropdown value exists in sessionStorage and pre-fill the dropdown
 const cuisinePreferencesSessionValue = sessionStorage.getItem('cuisine_preferences');
 if (cuisinePreferencesSessionValue) {
@@ -361,7 +359,6 @@ if (!cuisinePreferencesSessionValue) {
         customCuisineContainer.classList.add('hidden');
     }
 }
-
 
 </script>
 
